@@ -1,0 +1,7 @@
+__pycache__/
+asciienv/
+scripts/
+*.mp4
+inputs/*.jpg
+outputs/*.mp3
+outputs/*.npy

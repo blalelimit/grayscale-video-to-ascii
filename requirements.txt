@@ -1,0 +1,6 @@
+numpy
+tqdm
+pygame
+opencv-python
+ffmpeg-python
+Pillow
