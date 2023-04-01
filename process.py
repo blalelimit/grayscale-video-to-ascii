@@ -11,8 +11,8 @@ from math import floor
 
 
 FRAME_WIDTH = 160
-ASCII_CHARS = ['1', '#', '&', '%', '?', '+', '*', ';', ':', ',', '.', ' ']
-FACTOR = 256/len(ASCII_CHARS)
+ASCII_LUMINANCE = ['1', '#', '&', '%', '?', '+', '*', ';', ':', ',', '.', ' ']
+FACTOR = 256/len(ASCII_LUMINANCE)
 ASCII_LIST = list()
 
 
@@ -82,9 +82,9 @@ def greyscale(image_frame):
 
 # Convert pixels to ASCII
 def pixels_to_ascii(image_frame):
-    ASCII_CHARS[0] = str(rd.randint(0, 9))  # Generate random number for index 0
+    ASCII_LUMINANCE[0] = str(rd.randint(0, 9))  # Generate random number for index 0
     pixels = image_frame.getdata()
-    characters = ''.join([ASCII_CHARS[floor(pixel/FACTOR)] for pixel in pixels])
+    characters = ''.join([ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels])
     return characters
 
 
