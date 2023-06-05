@@ -10,7 +10,7 @@
 
 # Requirements
 * Python 3
-* FFmpeg
+* FFmpeg (to be installed and added to PATH)
 * To install the dependencies, type the following in the Terminal (where the Python environment is installed):
 ```sh
   python -m pip install -r requirements.txt
