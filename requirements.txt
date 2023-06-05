@@ -4,3 +4,4 @@ pygame
 opencv-python
 ffmpeg-python
 Pillow
+pyinstaller

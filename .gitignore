@@ -1,7 +1,11 @@
 __pycache__/
-asciienv/
+build/
+dist/
 scripts/
+venv/
+*.npy
+*.png
+*.jpg
+*.mp3
 *.mp4
-inputs/*.jpg
-outputs/*.mp3
-outputs/*.npy
+*.spec
