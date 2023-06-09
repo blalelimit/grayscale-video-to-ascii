@@ -11,16 +11,19 @@ from math import floor
 
 
 FRAME_WIDTH = 160
-ASCII_LUMINANCE = ['1', '#', '&', '%', '?', '+', '*', ';', ':', ',', '.', ' ']
+ASCII_LUMINANCE = ['@', '#', '&', '%', '?', '+', '*', ';', ':', ',', '.', ' ']
 FACTOR = 256/len(ASCII_LUMINANCE)
 ASCII_LIST = list()
 
 
 # FFmpeg for audio extraction
 def extract_audio(file):
+    sys.stdout.write('\nBeginning audio extraction\n')
+    if scan_file('outputs/input.mp3'):
+        sys.stdout.write('Audio already extracted\n')
+        return 
     message = ''
     try:
-        sys.stdout.write('\nBeginning audio extraction\n')
         if scan_audio(file):
             in_file = ffmpeg.input(file)
             total_duration = float(ffmpeg.probe(file)['format']['duration'])
@@ -41,7 +44,7 @@ def extract_audio(file):
 
 
 # Extract frames from video
-def extract_frames(video_path, start_frame, save_file, number_of_frames):
+def extract_frames(video_path, start_frame, save_file, number_of_frames, input_chars):
     capture = cv2.VideoCapture(video_path)
     capture.set(1, start_frame)
     frame_count = 1
@@ -52,7 +55,7 @@ def extract_frames(video_path, start_frame, save_file, number_of_frames):
         ret, image_frame = capture.read()
         try:
             image = Image.fromarray(image_frame)
-            ascii_characters = pixels_to_ascii(greyscale(resize_image(image)))  # Process image to convert to ASCII
+            ascii_characters = pixels_to_ascii(greyscale(resize_image(image)), input_chars)  # Process image to convert to ASCII
             pixel_count = len(ascii_characters)
             ascii_image = '\n'.join([ascii_characters[index:(index + FRAME_WIDTH)] for index in range(0, pixel_count, FRAME_WIDTH)])
             ASCII_LIST.append(ascii_image)
@@ -81,26 +84,53 @@ def greyscale(image_frame):
 
 
 # Convert pixels to ASCII
-def pixels_to_ascii(image_frame):
-    ASCII_LUMINANCE[0] = str(rd.randint(0, 9))  # Generate random number for index 0
+def pixels_to_ascii(image_frame, input_chars):
     pixels = image_frame.getdata()
-    characters = ''.join([ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels])
+
+    if input_chars == 1:  # 0's and 1's
+        point = 4
+        characters = [ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels]
+        for index, item in enumerate(characters):
+            if item in ASCII_LUMINANCE[:-point]:
+                characters[index] = str(rd.randint(0, 1))
+            else:
+                characters[index] = ' '
+        characters = ''.join(characters)
+
+    elif input_chars == 2:  # decimal
+        point = 4
+        characters = [ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels]
+        for index, item in enumerate(characters):
+            if item in ASCII_LUMINANCE[:-point]:
+                characters[index] = str(rd.randint(0, 9))
+            else:
+                characters[index] = ' '
+        characters = ''.join(characters)
+
+    elif input_chars == 3: # all
+        ASCII_LUMINANCE[0] = str(rd.randint(0, 9))  # Generate random number for index 0
+        characters = ''.join([ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels])
+
+    else: # input_chars == 0; normal
+        characters = ''.join([ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels])
+
     return characters
 
 
 # Process to generate ASCII
-def generate_ascii(path):
-    if scan_file(path):
+def generate_ascii(path, input_chars):    
+    input_chars = int(input_chars) if input_chars else 0    # defaults to 0
+    if not scan_file(path):
+        sys.stdout.write('Input file cannot be found\n')
+    else:
         path_to_video = path.strip()
         cap = cv2.VideoCapture(path_to_video)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         cap.release()
 
         sys.stdout.write('\nBeginning ASCII generation\n')
-        extract_frames(path_to_video, 1, path_to_video.split('.')[0], total_frames)
+        extract_frames(path_to_video, 1, path_to_video.split('.')[0], total_frames, input_chars)
         sys.stdout.write('ASCII generation completed!\n')
-    else:
-        sys.stdout.write('Input file cannot be found\n')
-
+        
 
 

@@ -36,7 +36,7 @@ def play_video(frames, total_frames, color=False, fps=30):
 
 
 # Play audio
-def play_audio(file, volume=10):
+def play_audio(file, volume):
     pygame.init()
     pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=2048)
     pygame.mixer.init()
@@ -46,10 +46,10 @@ def play_audio(file, volume=10):
 
 
 # Initialize all methods
-def play_all(file, color, volume):
+def play_all(file, input_color, input_volume):   
     try:
-        input_volume = float(volume) if volume else 10.0  # defaults to 10
-        input_color = True if color == 'y' else False    # defaults to False
+        input_color = True if input_color == 'y' else False   # input_color defaults to 'n'
+        input_volume = float(input_volume) if input_volume else 10.0    # volume defaults 10.0
         filename = file.split(".")[0]
         frames = f'outputs/{filename}.npy'
         audio = f'outputs/{filename}.mp3'
