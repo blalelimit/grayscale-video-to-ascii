@@ -15,6 +15,13 @@ def change_color(color_list):
     subprocess.run('color ' + "".join(chosen_colors), shell=True)
 
 
+# Removes multiple lines
+# def delete_multiple_lines(n=1):
+#     for _ in range(n):
+#         sys.stdout.write("\x1b[1A")  # Cursor up one line
+#         sys.stdout.write("\x1b[2K")  # Delete the last line
+
+
 # Plays video with changing colors in terminal
 def play_video(frames, total_frames, color=False, fps=30):
     starting_time = time.time()
@@ -22,9 +29,11 @@ def play_video(frames, total_frames, color=False, fps=30):
 
     subprocess.run('color 07', shell=True)
     sys.stdout.write(f'\n{frames[0]}\n') # Print initial frame
+    # delete_multiple_lines(n=1)
 
     for index in range(1, total_frames):
-        sys.stdout.write(f'\n{frames[index]}\n') # Number of new lines depends on preference
+        sys.stdout.write(f'\n{frames[index]}\n') # Prints each frame; Number of new lines depends on preference
+        # delete_multiple_lines(n=48)
         current_time = time.time() - starting_time
         
         if current_time < (index + 1) / fps:

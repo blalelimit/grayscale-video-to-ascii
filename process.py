@@ -9,6 +9,8 @@ from PIL import Image
 from tqdm import tqdm
 from math import floor
 
+from what_a_code import what_a_code
+
 
 FRAME_WIDTH = 160
 ASCII_LUMINANCE = ['@', '#', '&', '%', '?', '+', '*', ';', ':', ',', '.', ' ']
@@ -50,12 +52,13 @@ def extract_frames(video_path, start_frame, save_file, number_of_frames, input_c
     frame_count = 1
     ret, image_frame = capture.read()
     pbar = tqdm(total=number_of_frames, ascii=True) # Initialize progress bar
+    frame_height = calculate_frame_height(image_frame)  # Calculate frame height
     
     while ret and frame_count <= number_of_frames:
         ret, image_frame = capture.read()
         try:
             image = Image.fromarray(image_frame)
-            ascii_characters = pixels_to_ascii(greyscale(resize_image(image)), input_chars)  # Process image to convert to ASCII
+            ascii_characters = pixels_to_ascii(grayscale(resize_image(image, frame_height)), input_chars)  # Process image to convert to ASCII
             pixel_count = len(ascii_characters)
             ascii_image = '\n'.join([ascii_characters[index:(index + FRAME_WIDTH)] for index in range(0, pixel_count, FRAME_WIDTH)])
             ASCII_LIST.append(ascii_image)
@@ -69,51 +72,63 @@ def extract_frames(video_path, start_frame, save_file, number_of_frames, input_c
     pbar.close()
     
 
-# Resize image
-def resize_image(image_frame):
-    width, height = image_frame.size
+# Method to calculate frame height
+def calculate_frame_height(image_frame):
+    height, width, _ = image_frame.shape
     aspect_ratio = (height / float(width * 2.5))    # multiply by 2.5 to offset vertical scaling on terminal
-    new_height = int(aspect_ratio * FRAME_WIDTH)
-    resized_image = image_frame.resize((FRAME_WIDTH, new_height), resample=4)    # PIL Resampling.BOX to get the pixelated effect
+    frame_height = int(aspect_ratio * FRAME_WIDTH)
+    return frame_height
+
+
+# Resize image
+def resize_image(image_frame, frame_height):
+    resized_image = image_frame.resize((FRAME_WIDTH, frame_height), resample=4)    # PIL Resampling.BOX to get the pixelated effect
     return resized_image
 
 
 # Greyscale image
-def greyscale(image_frame):
+def grayscale(image_frame):
     return image_frame.convert('L')
+
+
+# Vectorize function for image_frame
+def vectorizer(image_frame, stop_point, stop_range, format_type):
+    for index, item in enumerate(image_frame):
+        if item in ASCII_LUMINANCE[:-stop_point]:
+            image_frame[index] = format(rd.randrange(stop_range), format_type)
+        else:
+            image_frame[index] = ' '
+    return image_frame
 
 
 # Convert pixels to ASCII
 def pixels_to_ascii(image_frame, input_chars):
     pixels = image_frame.getdata()
 
-    if input_chars == 1:  # 0's and 1's
-        point = 4
+    if input_chars == 1:  # 0's and 1's; binary
+        stop_point, stop_range, format_type = 4, 2, 'b'
         characters = [ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels]
-        for index, item in enumerate(characters):
-            if item in ASCII_LUMINANCE[:-point]:
-                characters[index] = str(rd.randint(0, 1))
-            else:
-                characters[index] = ' '
-        characters = ''.join(characters)
+        characters = vectorizer(characters, stop_point, stop_range, format_type)
 
     elif input_chars == 2:  # decimal
-        point = 4
+        stop_point, stop_range, format_type = 4, 10, 'd'
         characters = [ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels]
-        for index, item in enumerate(characters):
-            if item in ASCII_LUMINANCE[:-point]:
-                characters[index] = str(rd.randint(0, 9))
-            else:
-                characters[index] = ' '
-        characters = ''.join(characters)
+        characters = vectorizer(characters, stop_point, stop_range, format_type)
 
-    elif input_chars == 3: # all
-        ASCII_LUMINANCE[0] = str(rd.randint(0, 9))  # Generate random number for index 0
-        characters = ''.join([ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels])
+    elif input_chars == 3:  # hexadecimal
+        stop_point, stop_range, format_type = 4, 16, 'x'
+        characters = [ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels]
+        characters = vectorizer(characters, stop_point, stop_range, format_type)
 
     else: # input_chars == 0; normal
-        characters = ''.join([ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels])
+        stop_point, stop_range, format_type = 4, 2, 'b'
+        characters = [ASCII_LUMINANCE[floor(pixel/FACTOR)] for pixel in pixels]
+        characters = vectorizer(characters, stop_point, stop_range, format_type)
+        characters = ''.join(characters)
+        characters = what_a_code(characters)
+        return characters
 
+    characters = ''.join(characters)
     return characters
 
 

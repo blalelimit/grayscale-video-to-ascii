@@ -33,7 +33,7 @@ def main():
         user_input.strip()  # Removes trailing whitespaces
 
         if user_input == '1':
-            chars = input('Choose ASCII characters: (0: normal, 1: binary, 2: decimal, 3: all): ')
+            chars = input('Choose ASCII characters: (0: 2hu, 1: binary, 2: decimal, 3: hexadecimal): ')
             extract_audio(file)
             generate_ascii(file, chars)
             continue
