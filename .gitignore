@@ -1,9 +1,10 @@
 __pycache__/
 build/
 dist/
-scripts/
 venv/
+old/
 *.npy
+*.csv
 *.png
 *.jpg
 *.mp3

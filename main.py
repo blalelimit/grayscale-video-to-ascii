@@ -1,9 +1,9 @@
 # This project is based on the implementation by CalvinLoke in https://github.com/CalvinLoke/bad-apple
 import sys
 
-from utils import scan_file
-from process import extract_audio, generate_ascii
-from play import play_all
+from scripts.utils import scan_file
+from scripts.process import extract_audio, generate_ascii
+from scripts.play import play_all
 
 
 # Main method
@@ -12,6 +12,7 @@ def main():
         file = str(input("Please enter the path of file (ex. path/to/file/input.mp4): "))
         file.strip()  # Removes trailing whitespaces
         file = file if file else 'input.mp4'    # defaults to 'input.mp4'
+        filename = '.'.join(file.split('/')[-1].split('.')[:-1])
 
         if not scan_file(file):
             sys.stdout.write('Input file cannot be found\n\n')
@@ -33,14 +34,23 @@ def main():
         user_input.strip()  # Removes trailing whitespaces
 
         if user_input == '1':
-            chars = input('Choose ASCII characters: (0: 2hu, 1: binary, 2: decimal, 3: hexadecimal): ')
-            extract_audio(file)
-            generate_ascii(file, chars)
+            chars = input('Choose ASCII characters: (0: 2hu, 1: binary, 2: decimal, 3: hexadecimal, 4: luminance): ')
+            extract_audio(file, filename)
+            generate_ascii(file, filename, chars)
             continue
         elif user_input == '2':
             volume = input('Choose volume (from 0 to 100): ')
             color = input('Turn on color effects? (y or n): ')
-            play_all(file, color, volume)
+            reverse = input('Play in reverse? (y or n): ')
+
+            if reverse == 'y':
+                play_all(filename, color, volume, 'y')
+                play_all(filename, color, volume, 'n')
+
+            else:
+                play_all(filename, color, volume, 'n')
+                play_all(filename, color, volume, 'y')
+
             continue
         elif user_input == '3':
             sys.stdout.write('Thank you for using the program.\n')

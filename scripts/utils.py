@@ -1,5 +1,6 @@
 import sys
 import ffmpeg
+import random as rd
 
 from queue import Queue
 from threading import Thread
@@ -42,13 +43,13 @@ def reader(pipe, queue):
         queue.put(None)
 
 
-# Progress Bar by Gulski in https://github.com/kkroening/ffmpeg-python/issues/43#issuecomment-924800648
+# Audio Progress Bar by Gulski in https://github.com/kkroening/ffmpeg-python/issues/43#issuecomment-924800648
 def audio_progress(process, total_duration):
     q = Queue()
     error = False
     Thread(target=reader, args=[process.stdout, q]).start()
     Thread(target=reader, args=[process.stderr, q]).start()
-    bar = tqdm(total=round(total_duration, 2), ascii=True)
+    bar = tqdm(total=round(total_duration, 2), ascii=True, unit='frames', colour='blue')
     for _ in range(2):
         for source, line in iter(q.get, None):
             line = line.decode()
@@ -66,4 +67,32 @@ def audio_progress(process, total_duration):
                     bar.update(bar.total - bar.n)
     bar.close()
     return f'Audio extraction encountered a warning or error!' if error else 'Audio extraction successful!'
+
+
+# Method to calculate frame height
+def calculate_frame_height(image_frame, FRAME_WIDTH):
+    height, width, _ = image_frame.shape
+    aspect_ratio = (height / float(width * 2.5))    # multiply by 2.5 to offset vertical scaling on terminal
+    frame_height = int(aspect_ratio * FRAME_WIDTH)
+    return frame_height
+
+
+# Resize image
+def resize_image(image_frame, FRAME_WIDTH, frame_height):
+    resized_image = image_frame.resize((FRAME_WIDTH, frame_height), resample=4)    # PIL Resampling.BOX to get the pixelated effect
+    return resized_image
+
+
+# Greyscale image
+def grayscale(image_frame):
+    return image_frame.convert('L')
+
+
+# Function to replace template ascii with specific ascii characters
+def replacer(image_frame, num_range):
+    for index, item in enumerate(image_frame):
+        if item != ' ':
+            image_frame[index] = rd.choice(num_range)
+    return image_frame
+        
 

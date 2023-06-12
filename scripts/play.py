@@ -6,7 +6,7 @@ import pygame
 import time
 import subprocess
 
-from utils import scan_file
+from scripts.utils import scan_file
 
 
 # Randomize colors
@@ -23,11 +23,14 @@ def change_color(color_list):
 
 
 # Plays video with changing colors in terminal
-def play_video(frames, total_frames, color=False, fps=30):
+def play_video(frames, total_frames, color=False, fps=30, reverse=False):
     starting_time = time.time()
     color_list = ['%x' % x for x in range(0, 0xF)]  # Avaiable colors in terminal
 
-    subprocess.run('color 07', shell=True)
+    if reverse:
+        frames = frames[::-1]   # reverses the frames
+        subprocess.run('color 70', shell=True)
+
     sys.stdout.write(f'\n{frames[0]}\n') # Print initial frame
     # delete_multiple_lines(n=1)
 
@@ -42,24 +45,27 @@ def play_video(frames, total_frames, color=False, fps=30):
             change_color(color_list)    # Change color every 12 frames
 
     subprocess.run('color 07', shell=True)
+    pygame.mixer.music.stop()
 
 
 # Play audio
-def play_audio(file, volume):
+def play_audio(file, volume, reverse):
+    if reverse:
+        file += '_r'
     pygame.init()
     pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=2048)
     pygame.mixer.init()
-    pygame.mixer.music.load(file)
+    pygame.mixer.music.load(f'outputs/{file}.mp3')
     pygame.mixer.music.set_volume(volume)
     pygame.mixer.music.play()
-
+ 
 
 # Initialize all methods
-def play_all(file, input_color, input_volume):   
+def play_all(filename, input_color, input_volume, input_reverse):   
     try:
         input_color = True if input_color == 'y' else False   # input_color defaults to 'n'
         input_volume = float(input_volume) if input_volume else 10.0    # volume defaults 10.0
-        filename = file.split(".")[0]
+        input_reverse = True if input_reverse == 'y' else False   # input_reverse defaults to 'n'
         frames = f'outputs/{filename}.npy'
         audio = f'outputs/{filename}.mp3'
         if not scan_file(frames):
@@ -69,9 +75,9 @@ def play_all(file, input_color, input_volume):
             sys.stdout.write('No audio input found, video continues\n')
             time.sleep(1.5) # delay before video starts
         else:
-            play_audio(file=f'outputs/{filename}.mp3', volume=input_volume/100)   # play audio when present
+            play_audio(file=filename, volume=input_volume/100, reverse=input_reverse)   # play audio when present
         ascii_art = np.load(frames) # load ASCII art
-        play_video(frames=ascii_art, total_frames=len(ascii_art), color=input_color) # play video
+        play_video(frames=ascii_art, total_frames=len(ascii_art), color=input_color, reverse=input_reverse) # play video
     except FileNotFoundError:
         sys.stdout.write('Input file cannot be found\n')
     

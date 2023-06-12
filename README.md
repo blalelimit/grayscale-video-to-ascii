@@ -6,7 +6,7 @@
 # Features
 * process.py -> Python file able to capture all input frames of a video and convert them as ASCII art. The output files are *.npy containing the ASCII art runnable through Terminals, and *.mp3 file (if the video has audio).
 * play.py -> Prints the content from *.npy in the Terminal, and plays the audio (if present).
-* main.py -> Main method that runs the methods from process.py and play.py, asks user to input video file, volume level, and color effects (WARNING! The lights may be flashy) in the Terminal.
+* main.py -> Main method that runs the methods from process.py and play.py, asks user to input video file, volume level, color effects (WARNING! The lights may be flashy), and reverse playback in the Terminal.
 
 # Requirements
 * Python 3
