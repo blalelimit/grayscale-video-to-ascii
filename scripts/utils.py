@@ -49,7 +49,7 @@ def audio_progress(process, total_duration):
     error = False
     Thread(target=reader, args=[process.stdout, q]).start()
     Thread(target=reader, args=[process.stderr, q]).start()
-    bar = tqdm(total=round(total_duration, 2), ascii=True, unit='frames', colour='blue')
+    bar = tqdm(total=round(total_duration, 2), ascii=True, colour='blue')
     for _ in range(2):
         for source, line in iter(q.get, None):
             line = line.decode()

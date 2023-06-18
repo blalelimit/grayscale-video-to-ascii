@@ -1,11 +1,9 @@
-import numpy as np
 import pandas as pd
-import random as rd
 import os
 import re
 
 from itertools import islice
-from random import randint
+from random import randint, choice, shuffle
 
 
 df = pd.read_csv(os.path.join(os.getcwd(), 'inputs', 'csv', '2hu.csv')) # 2hu.csv
@@ -25,7 +23,7 @@ def random_chunk_replacements(li, min_chunk=MIN_CHUNK, max_chunk=MAX_CHUNK):
     while True:
         nxt = ''.join(list(islice(it, randint(min_chunk, max_chunk))))
         if nxt:
-            nxt = np.random.choice(dict_chars.get(len(nxt)))
+            nxt = choice(dict_chars.get(len(nxt)))
             yield nxt
         else:
             break
@@ -42,7 +40,7 @@ def replace_ascii_to_words(frame) -> str:
         # for each splitted line in frame_line, replace with chunks (which have replaced items, in this case character names)
         for line in input_line:
             new_line = list(random_chunk_replacements(line))    # generates chunks (with replaced items)
-            rd.shuffle(new_line)    # shuffles line
+            shuffle(new_line)    # shuffles line
             output_line.append(''.join(new_line))   # replacement line
 
         # for each splitted line in frame_line (input_line), replace with output_line[x]

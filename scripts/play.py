@@ -4,15 +4,20 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame
 import time
-import subprocess
+import random as rd
 
+from colorama import Fore, Back, Style
 from scripts.utils import scan_file
 
 
 # Randomize colors
-def change_color(color_list):
-    chosen_colors = np.random.choice(color_list, size=2, replace=False)
-    subprocess.run('color ' + "".join(chosen_colors), shell=True)
+def change_color():
+    foreground = rd.choice([Fore.BLACK, Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.CYAN, Fore.WHITE, Fore.RESET])
+    background = rd.choice([Back.BLACK, Back.RED, Back.GREEN, Back.YELLOW, Back.BLUE, Back.MAGENTA, Back.CYAN, Back.WHITE, Back.RESET])
+    style = rd.choice([Style.DIM, Style.NORMAL, Style.BRIGHT])
+    print(foreground)   # change foreground color
+    print(background)   # change background color
+    print(style)   # change style
 
 
 # Removes multiple lines
@@ -25,11 +30,12 @@ def change_color(color_list):
 # Plays video with changing colors in terminal
 def play_video(frames, total_frames, color=False, fps=30, reverse=False):
     starting_time = time.time()
-    color_list = ['%x' % x for x in range(0, 0xF)]  # Avaiable colors in terminal
 
     if reverse:
         frames = frames[::-1]   # reverses the frames
-        subprocess.run('color 70', shell=True)
+        print(Fore.BLACK)   # change foreground color
+        print(Back.WHITE)   # change background color
+        print(Style.BRIGHT)   # change style
 
     sys.stdout.write(f'\n{frames[0]}\n') # Print initial frame
     # delete_multiple_lines(n=1)
@@ -42,9 +48,9 @@ def play_video(frames, total_frames, color=False, fps=30, reverse=False):
         if current_time < (index + 1) / fps:
             time.sleep((index + 1) / fps - current_time)    # Wait for n frames
         if color and index % 12 == 0:
-            change_color(color_list)    # Change color every 12 frames
+            change_color()    # Change color every 12 frames
 
-    subprocess.run('color 07', shell=True)
+    print(Style.RESET_ALL)  # reset styles to default
     pygame.mixer.music.stop()
 
 
