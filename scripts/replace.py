@@ -6,16 +6,16 @@ from itertools import islice
 from random import randint, choice, shuffle
 
 
-df = pd.read_csv(os.path.join(os.getcwd(), 'inputs', 'csv', '2hu.csv')) # 2hu.csv
-df['character'] = df['character'].apply(lambda x: x[0].upper() + x[1:])
-df['name_length'] = df['character'].apply(lambda x: len(x))
+df = pd.read_csv(os.path.join(os.getcwd(), 'inputs', 'data.csv')) # data.csv
+df['name'] = df['name'].apply(lambda x: x[0].upper() + x[1:])   # capitalize each name
+df['name_length'] = df['name'].apply(lambda x: len(x))  # get string length of each name
 
 MIN_CHUNK = df['name_length'].min()
 MAX_CHUNK = df['name_length'].max()
 
-df = pd.concat((df, pd.DataFrame({'character': ['~', 'TH'], 'name_length': [1, 2]}))).reset_index(drop=True)
-dict_chars = df.groupby('name_length')['character'].apply(list).to_dict()   # converts grouped name_length to dictionary
-# dictionary format is {1: ['~'], 2: ['TH'], 3: ['Ran', 'Aya'], 4: ['Chen', 'Tewi', 'Hina', 'Elly']}
+df = pd.concat((df, pd.DataFrame({'name': ['~', 'NA'], 'name_length': [1, 2]}))).reset_index(drop=True) # reset index after concatenation
+dict_chars = df.groupby('name_length')['name'].apply(list).to_dict()   # converts grouped name_length to dictionary
+# dictionary format example {1: ['~'], 2: ['NA'], 3: ['Ran', 'Aya'], 4: ['Chen', 'Tewi', 'Hina', 'Elly']}
 
 
 def random_chunk_replacements(li, min_chunk=MIN_CHUNK, max_chunk=MAX_CHUNK):
