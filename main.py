@@ -34,14 +34,14 @@ def main():
         user_input.strip()  # Removes trailing whitespaces
 
         if user_input == '1':
-            chars = input('Choose ASCII characters: (0: 2hu, 1: binary, 2: decimal, 3: hexadecimal, 4: luminance): ')
+            chars = input('Choose ASCII characters: (0: 2hu, 1: binary, 2: decimal, 3: hexadecimal, 4: luminance [4]): ')
             extract_audio(file, filename)
             generate_ascii(file, filename, chars)
             continue
         elif user_input == '2':
-            volume = input('Choose volume (from 0 to 100): ')
-            color = input('Turn on color effects? (y or n): ')
-            reverse = input('Play in reverse? (y or n): ')
+            volume = input('Choose volume (0-100 [5]): ')
+            color = input('Turn on color effects? (y/N): ')
+            reverse = input('Play in reverse? (y/N): ')
 
             if reverse == 'y':
                 play_all(filename, color, volume, 'y')
