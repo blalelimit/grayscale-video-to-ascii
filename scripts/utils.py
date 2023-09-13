@@ -44,7 +44,7 @@ def reader(pipe, queue):
 
 
 # Audio Progress Bar by Gulski in https://github.com/kkroening/ffmpeg-python/issues/43#issuecomment-924800648
-def audio_progress(process, total_duration):
+def audio_progress(process, total_duration, padding):
     q = Queue()
     error = False
     Thread(target=reader, args=[process.stdout, q]).start()
@@ -66,7 +66,7 @@ def audio_progress(process, total_duration):
                 elif key == 'progress' and value == 'end':
                     bar.update(bar.total - bar.n)
     bar.close()
-    return f'Audio extraction encountered a warning or error!' if error else 'Audio extraction successful!'
+    return f'Audio extraction encountered a warning or error!' if error else f'{padding}audio extraction successful!'.capitalize()
 
 
 # Method to calculate frame height

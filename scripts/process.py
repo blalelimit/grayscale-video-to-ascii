@@ -13,7 +13,7 @@ from scripts.utils import *
 from scripts.replace import replace_ascii_to_words
 
 
-FRAME_WIDTH = 160
+FRAME_WIDTH = 140
 ASCII_LUMINANCE = ['@', '#', '&', '%', '?', '+', '*', ';', ':', ',', '.', ' ']
 FACTOR = 256/len(ASCII_LUMINANCE)
 ASCII_OUTPUT = []
@@ -29,9 +29,12 @@ ASCII_HEXADECIMAL = ASCII_DECIMAL + list(string.hexdigits)[16:]
 # Main ffmpeg method to export audio
 def extract_audio_main(file, filename, reverse=False):
     additional_args = dict()
+    message = ''
+    padding = ''
     if reverse:
         filename += '_r'
         additional_args = dict(af='areverse')
+        padding = 'reversed '
     try:
         if scan_audio(file):
             in_file = ffmpeg.input(file)
@@ -42,8 +45,8 @@ def extract_audio_main(file, filename, reverse=False):
                     .output(in_file.audio, f'outputs/{filename}.mp3', acodec='mp3', audio_bitrate=320, **additional_args)
                     .global_args('-progress', 'pipe:1', '-loglevel', 'error')
                     .overwrite_output()
-                    .run_async(pipe_stdout=True, pipe_stderr=True, cmd='ffmpeg.exe')
-                ), total_duration)
+                    .run_async(pipe_stdout=True, pipe_stderr=True, cmd='ffmpeg')
+                ), total_duration, padding)
         else:
             message = 'No audio found in the video'
     except ffmpeg.Error as e:
@@ -56,7 +59,7 @@ def extract_audio_main(file, filename, reverse=False):
 def extract_audio(file, filename):
     sys.stdout.write('\nBeginning audio extraction\n')
     if scan_file(f'outputs/{filename}.mp3'): 
-        rewrite = input('Audio already extracted, rewrite (y/n)? ')
+        rewrite = input('Audio already extracted, rewrite (y/N)? ')
         if rewrite != 'y':
             return
         try:
@@ -75,7 +78,7 @@ def extract_audio(file, filename):
 def generate_ascii(file, filename, input_chars):
     sys.stdout.write('\nBeginning ASCII generation\n')
     if scan_file(f'outputs/{filename}.npy'): 
-        rewrite = input('ASCII (*.npy) already extracted, rewrite (y/n)? ')
+        rewrite = input('ASCII (*.npy) already extracted, rewrite (y/N)? ')
         if rewrite != 'y':
             return
         Path(f'outputs/{filename}.npy').unlink()
