@@ -13,7 +13,7 @@ df['name_length'] = df['name'].apply(lambda x: len(x))  # get string length of e
 MIN_CHUNK = df['name_length'].min()
 MAX_CHUNK = df['name_length'].max()
 
-df = pd.concat((df, pd.DataFrame({'name': ['~', 'TH'], 'name_length': [1, 2]}))).reset_index(drop=True) # reset index after concatenation
+df = pd.concat((df, pd.DataFrame({'name': ['~', 'NA'], 'name_length': [1, 2]}))).reset_index(drop=True) # reset index after concatenation
 dict_chars = df.groupby('name_length')['name'].apply(list).to_dict()   # converts grouped name_length to dictionary
 # dictionary format example {1: ['~'], 2: ['NA'], 3: ['Ran', 'Aya'], 4: ['Chen', 'Tewi', 'Hina', 'Elly']}
 
