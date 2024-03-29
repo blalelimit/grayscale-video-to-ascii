@@ -94,5 +94,3 @@ def replacer(image_frame, num_range):
         if item != ' ':
             image_frame[index] = rd.choice(num_range)
     return image_frame
-        
-

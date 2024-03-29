@@ -44,7 +44,7 @@ def play_video(frames, total_frames, color=False, fps=30, reverse=False):
         sys.stdout.write(f'\n{frames[index]}\n') # Prints each frame; Number of new lines depends on preference
         # delete_multiple_lines(n=48)
         current_time = time.time() - starting_time
-        
+
         if current_time < (index + 1) / fps:
             time.sleep((index + 1) / fps - current_time)    # Wait for n frames
         if color and index % 12 == 0:
@@ -64,10 +64,10 @@ def play_audio(file, volume, reverse):
     pygame.mixer.music.load(f'outputs/{file}.mp3')
     pygame.mixer.music.set_volume(volume)
     pygame.mixer.music.play()
- 
+
 
 # Initialize all methods
-def play_all(filename, input_color, input_volume, input_reverse):   
+def play_all(filename, input_color, input_volume, input_reverse):
     try:
         input_color = True if input_color == 'y' else False   # input_color defaults to 'n'
         input_volume = float(input_volume) if input_volume else 10.0    # volume defaults 10.0
@@ -86,9 +86,3 @@ def play_all(filename, input_color, input_volume, input_reverse):
         play_video(frames=ascii_art, total_frames=len(ascii_art), color=input_color, reverse=input_reverse) # play video
     except FileNotFoundError:
         sys.stdout.write('Input file cannot be found\n')
-    
-    
-    
-
-
-

@@ -13,7 +13,7 @@ from scripts.utils import *
 from scripts.replace import replace_ascii_to_words
 
 
-FRAME_WIDTH = 140
+FRAME_WIDTH = 145
 ASCII_LUMINANCE = ['@', '#', '&', '%', '?', '+', '*', ';', ':', ',', '.', ' ']
 FACTOR = 256/len(ASCII_LUMINANCE)
 ASCII_OUTPUT = []
@@ -52,13 +52,13 @@ def extract_audio_main(file, filename, reverse=False):
     except ffmpeg.Error as e:
         sys.stdout.write('FFmpeg error\n')  # e.stderr.decode()
     finally:
-        sys.stdout.write(f'{message}\n')  
+        sys.stdout.write(f'{message}\n')
 
 
 # FFmpeg for audio extraction
 def extract_audio(file, filename):
     sys.stdout.write('\nBeginning audio extraction\n')
-    if scan_file(f'outputs/{filename}.mp3'): 
+    if scan_file(f'outputs/{filename}.mp3'):
         rewrite = input('Audio already extracted, rewrite (y/N)? ')
         if rewrite != 'y':
             return
@@ -77,7 +77,7 @@ def extract_audio(file, filename):
 # Process to generate ASCII
 def generate_ascii(file, filename, input_chars):
     sys.stdout.write('\nBeginning ASCII generation\n')
-    if scan_file(f'outputs/{filename}.npy'): 
+    if scan_file(f'outputs/{filename}.npy'):
         rewrite = input('ASCII (*.npy) already extracted, rewrite (y/N)? ')
         if rewrite != 'y':
             return
@@ -105,12 +105,12 @@ def extract_frames(filename, video_path, start_frame, n_frames, ascii_chars_type
     capture = cv2.VideoCapture(video_path)
     capture.set(1, start_frame)
     success, image_frame = capture.read()
- 
+
     # Calculate frame height to determine how many LF (\n) for all frames
     frame_height = calculate_frame_height(image_frame, FRAME_WIDTH)
-    
+
     # Read frames while capture.read() is successful
-    # frame_count = 1   
+    # frame_count = 1
     # while success and frame_count <= n_frames:
     while success:
         success, image_frame = capture.read()
@@ -132,7 +132,7 @@ def process_frames(image_frame, frame_height, ascii_chars_type):
     # Image Frame (img format) to Image Array (*.npy format)
     image = Image.fromarray(image_frame)
     # Process image to convert to ASCII [Grayscale, Resize Image, Pixels to ASCII]
-    ascii_characters = pixels_to_ascii(grayscale(resize_image(image, FRAME_WIDTH, frame_height)), ascii_chars_type) 
+    ascii_characters = pixels_to_ascii(grayscale(resize_image(image, FRAME_WIDTH, frame_height)), ascii_chars_type)
     # Join each line in a single frame with LF (\n)
     pixel_count = len(ascii_characters)
     ascii_frame = '\n'.join([ascii_characters[index:(index + FRAME_WIDTH)] for index in range(0, pixel_count, FRAME_WIDTH)])
@@ -158,7 +158,7 @@ def pixels_to_ascii(image_frame, ascii_chars_type):
 
         elif ascii_chars_type == 1:  # 0's and 1's; binary
             characters = replacer(image_frame=characters, num_range=ASCII_BINARY)
-            
+
         elif ascii_chars_type == 2:  # decimal numbers
             characters = replacer(image_frame=characters, num_range=ASCII_DECIMAL)
 
@@ -166,7 +166,3 @@ def pixels_to_ascii(image_frame, ascii_chars_type):
             characters = replacer(image_frame=characters, num_range=ASCII_HEXADECIMAL)
 
         return ''.join(characters)
-
-
-
-
